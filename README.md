@@ -2,9 +2,9 @@
 
 A Next.js application that leverages generative ai to generate various types of diagrams using Mermaid syntax, including flowcharts, mindmaps, timelines, and more.
 
-## Features
+## Diagrams
 
- Multiple diagram types supported:
+Multiple diagram types supported:
 - Flowcharts
 - Mindmaps
 - Timelines
@@ -15,10 +15,12 @@ A Next.js application that leverages generative ai to generate various types of 
 - Gantt Charts
 - Architecture Diagrams
 
-Interactive diagram viewing with zoom and pan capabilities
-Export options for SVG format and Mermaid code
-Dark theme optimized UI using DaisyUI
-Responsive design
+## Features
+
+- Interactive diagram viewing with zoom and pan capabilities
+- Export options for SVG format and Mermaid code
+- Dark theme optimized UI using DaisyUI
+- Responsive design
 
 ## Prerequisites
 
