@@ -1,0 +1,566 @@
+Directory: src
+
+Directory Structure:
+```
+.
+├── components
+│   ├── components/mermaid.tsx
+│   ├── components/nav.tsx
+│   └── components/select-template.tsx
+├── lib
+│   ├── lib/generate.ts
+│   ├── lib/helpers.ts
+│   ├── lib/prompt-by-template.ts
+│   └── lib/syntax
+│       ├── lib/syntax/architecture.md
+│       ├── lib/syntax/class.md
+│       ├── lib/syntax/entityrelationship.md
+│       ├── lib/syntax/flowchart.md
+│       ├── lib/syntax/mindmap.md
+│       ├── lib/syntax/sequence.md
+│       ├── lib/syntax/state.md
+│       ├── lib/syntax/timeline.md
+│       └── lib/syntax/userjourney.md
+├── pages
+│   ├── pages/_app.tsx
+│   ├── pages/_document.tsx
+│   ├── pages/api
+│   │   ├── pages/api/ask.ts
+│   │   └── pages/api/dist
+│   │       └── pages/api/dist/ask.js
+│   └── pages/index.tsx
+└── styles
+    └── styles/globals.css
+```
+
+Contents of components/mermaid.tsx:
+```
+import React, { FC, useEffect } from "react";
+import mermaid from "mermaid";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+
+mermaid.initialize({
+  startOnLoad: true,
+  theme: "dark",
+  securityLevel: "loose",
+  themeCSS: `
+  
+  .
+  `,
+  fontFamily: "Fira Code",
+});
+
+interface IMermaid {
+  chart: string;
+  name: string;
+}
+
+export const Mermaid: FC<IMermaid> = ({ chart, name }) => {
+  useEffect(() => {
+    if (chart) mermaid.contentLoaded();
+  }, [chart]);
+
+  const exportSvg = async () => {
+    const svgData = await mermaid.render("text1", chart);
+
+    const svgBlob = new Blob([svgData.svg], {
+      type: "image/svg+xml;charset=utf-8",
+    });
+
+    const svgUrl = URL.createObjectURL(svgBlob);
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = `${name}.svg`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
+  const copyMermaidCode = async () => {
+    await navigator.clipboard.writeText(chart);
+    alert("Mermaid Code" + chart);
+  };
+
+  return (
+    <div className="relative w-full flex justify-center">
+      <div className="absolute right-1 bottom-1 m-2 z-50 dropdown dropdown-end">
+        <label tabIndex={0} className="btn btn-success m-1">
+          Export
+        </label>
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu p-2 shadow bg-gray-700 rounded-box w-52"
+        >
+          <li>
+            <button onClick={copyMermaidCode}>Copy Mermaid Code</button>
+          </li>
+          <li>
+            <button onClick={exportSvg}>SVG</button>
+          </li>
+        </ul>
+      </div>
+
+      <TransformWrapper>
+        <TransformComponent contentClass="w-full" wrapperClass="w-full h-full">
+          <div className="mermaid w-full mb-100">{chart}</div>
+        </TransformComponent>{" "}
+      </TransformWrapper>
+    </div>
+  );
+};
+
+```
+
+Contents of components/nav.tsx:
+```
+import { Icon } from "@iconify/react";
+import Image from "next/image";
+import React from "react";
+
+const Nav = () => {
+  return (
+    <div className="fixed top-0 left-0 z-50 w-full">
+      <nav className="footer items-center p-1 text-neutral-content">
+        <div className="items-center grid-flow-col">
+          <a
+            className="btn btn-ghost"
+            href="https://github.com/otey247/flowgpt"
+            rel="noreferrer"
+            target="_blank"
+          >
+            <Image
+              src="/brand/logo_text.png"
+              width={100}
+              height={20}
+              alt="Flowgpt Logo"
+            />
+            <div className="badge badge-sm self-end">alpha</div>
+          </a>
+        </div>
+        <div className="grid-flow-col gap-2 md:place-self-center md:justify-self-end mr-4 font-serif">
+          <span>Made with ❤️ by</span>
+          <a
+            href="https://twitter.com/otey247"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Icon
+              icon="akar-icons:twitter-fill"
+              className="text-xl text-[#1DA1F2]"
+            />
+          </a>
+          <a
+            href="https://github.com/otey247/flowgpt"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Icon icon="akar-icons:github-fill" className="text-lg" />
+          </a>
+        </div>
+      </nav>
+    </div>
+  );
+};
+
+export default Nav;
+
+```
+
+Contents of components/select-template.tsx:
+```
+import React, { FunctionComponent } from "react";
+import { TemplateEnum } from "@/lib/prompt-by-template";
+
+interface ITemplate {
+  label: string;
+  value: TemplateEnum;
+}
+
+export const templates: ITemplate[] = [
+  { label: "Flowchart", value: TemplateEnum.FLOWCHART },
+  { label: "Mindmap", value: TemplateEnum.MINDMAP },
+  { label: "Timeline", value: TemplateEnum.TIMELINE },
+  { label: "User Journey", value: TemplateEnum.USERJOURNEY },
+  { label: "Entity Relationship", value: TemplateEnum.ENTITYRELATIONSHIP },
+  { label: "Sequence Diagram", value: TemplateEnum.SEQUENCE },
+  { label: "State Diagram", value: TemplateEnum.STATE },
+  { label: "Gantt Chart", value: TemplateEnum.GANTT },
+  { label: "Architecture Diagram", value: TemplateEnum.ARCHITECTURE },
+  // { label: "Class Diagram", value: TemplateEnum.CLASS }, // FIXME: syntax mistake is pretty common for this
+];
+
+interface ISelectTemplate {
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+const SelectTemplate: FunctionComponent<ISelectTemplate> = ({ onChange }) => {
+  return (
+    <select onChange={onChange} className="select select-bordered select-lg">
+      {templates.map((item) => (
+        <option value={item.value} key={item.label}>
+          {item.label}
+        </option>
+      ))}
+    </select>
+  );
+};
+
+export default SelectTemplate;
+
+```
+
+Contents of lib/generate.ts:
+```
+import { OpenAI } from "@langchain/openai";
+import { LLMChain } from "langchain/chains";
+import { PromptTemplate } from "@langchain/core/prompts";
+
+export const generate = async ({ input, selectedTemplate }) => {
+  try {
+    const model = new OpenAI({ temperature: 0.9 });
+
+    const template =
+      "{syntax} - {instructions} learn from syntax above and write {template} in mermaid syntax about {input}?";
+    const prompt = new PromptTemplate({
+      template,
+      inputVariables: ["template", "input", "syntax", "instructions"],
+    });
+
+    const chain = new LLMChain({ llm: model, prompt });
+
+    // @ts-ignore
+    const syntaxDoc = await import(
+      `./syntax/${selectedTemplate.toLowerCase()}.md`
+    );
+
+    const res = await chain.call({
+      template: selectedTemplate,
+      input,
+      syntax: syntaxDoc.default,
+      instructions: `
+      - use different shapes, colors and also use icons when possible as mentioned in the doc.
+      - strict rules: do not add Note and do not explain the code and do not add any additional text except code, 
+      - do not use 'end' syntax
+      - do not use any parenthesis inside block
+      `,
+    });
+
+    return res;
+  } catch (e) {
+    console.log("openai:debug", e?.response?.data);
+    throw e;
+  }
+};
+```
+
+Contents of lib/helpers.ts:
+```
+export const sanitizeText = (text: string) => text.trim().replaceAll("\n", " ");
+
+```
+
+Contents of lib/prompt-by-template.ts:
+```
+export enum TemplateEnum {
+  FLOWCHART = "FLOWCHART",
+  MINDMAP = "MINDMAP",
+  TIMELINE = "TIMELINE",
+  USERJOURNEY = "USERJOURNEY",
+  CLASS = "CLASS",
+  ENTITYRELATIONSHIP = "ENTITYRELATIONSHIP",
+  SEQUENCE = "SEQUENCE",
+  STATE = "STATE",
+  GANTT = "GANTT",
+  ARCHITECTURE = "ARCHITECTURE",
+}
+
+const commonRules = `- strict rules: do not add Note and do not explain the code and do not add any additional text except code, do not use 'end' syntax
+        - do not use any parenthesis inside block`;
+
+export const promptByTemplate = {
+  [TemplateEnum.FLOWCHART]: (input: string) => `write flowchart about ${input} 
+        ${commonRules}
+        eg:  correct: C -->|true| D(setLoading), wrong: correct: C -->|true| D(setLoading=>true)
+        eg:  correct: C -->|true| D(axios.post=>'/api/ask', input), wrong: C -->|true| D(axios.post('/api/ask', {input,}))
+        eg: correct: J -->|text| L[Print 'number is not a prime number'] wrong: J -->|| L[Print 'number is not a prime number']
+        `,
+
+  [TemplateEnum.MINDMAP]: (input: string) => `write mindmap about ${input} 
+        ${commonRules}
+         syntax:
+                
+        `,
+};
+
+```
+
+Contents of pages/index.tsx:
+```
+import React, { useState } from "react";
+import axios from "axios";
+import { Mermaid } from "@/components/mermaid";
+import SelectTemplate from "@/components/select-template";
+import { TemplateEnum } from "@/lib/prompt-by-template";
+import Image from "next/image";
+import Nav from "@/components/nav";
+
+const Index = () => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [input, setInput] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(
+    TemplateEnum.FLOWCHART
+  );
+
+  const name = input ? input.replace(/\s/g, "-").toLowerCase() : "";
+
+  const [chart, setChart] = useState("");
+
+  const handleFlow = async (e: any) => {
+    e.preventDefault();
+    if (!input && !loading) return;
+    setLoading(true);
+
+    try {
+      const res = await axios.post("/api/ask", {
+        input,
+        selectedTemplate,
+      });
+
+      if (res.data.text) {
+        setChart(res.data.text);
+      } else {
+        setError("Sorry! a small issue occurred");
+      }
+    } catch (e) {
+      console.log(e);
+      setError("Sorry! a small issue occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex justify-end items-center flex-col h-screen">
+      <Nav />
+
+      <div className="flex-1 flex justify-center border-2 border-dashed w-full mb-2 overflow-scroll">
+        {loading ? (
+          <div className="flex flex-col justify-center animate-pulse">
+            <h1 className="text-7xl font-black">Loading...</h1>
+          </div>
+        ) : (
+          <>
+            {!!chart ? (
+              <Mermaid chart={chart} name={name} />
+            ) : (
+              <div className="flex flex-col justify-center text-white">
+                <h1 className="text-7xl font-black">Generate</h1>
+                <h3 className="text-8xl font-black text-success">Flowchart</h3>
+                <h2 className="text-5xl font-black">with AI</h2>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      <div className="flex">
+        <form onSubmit={handleFlow} className="form-control">
+          <div className="input-group">
+            <input
+              className="input input-lg input-bordered input-success w-96 "
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              type="text"
+              placeholder="What the flowchart is about"
+              autoFocus="on"
+            />
+            <button
+              type="submit"
+              className={`btn btn-grad btn-lg ${loading ? "loading" : ""}`}
+            >
+              {error ? "Retry" : "Generate Flowchart"}
+            </button>
+          </div>
+          <SelectTemplate
+            onChange={(e) => setSelectedTemplate(e.target.value)}
+          />
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Index;
+
+```
+
+Contents of pages/_app.tsx:
+```
+import '@/styles/globals.css'
+import type { AppProps } from 'next/app'
+
+export default function App({ Component, pageProps }: AppProps) {
+  return <Component {...pageProps} />
+}
+
+```
+
+Contents of pages/_document.tsx:
+```
+import { Html, Head, Main, NextScript } from 'next/document'
+
+export default function Document() {
+  return (
+    <Html lang="en">
+      <Head />
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  )
+}
+
+```
+
+Contents of pages/api/ask.ts:
+```
+import { NextApiRequest, NextApiResponse } from "next";
+import { ChatOpenAI } from "@langchain/openai";
+import { TemplateEnum } from "@/lib/prompt-by-template";
+import { generate } from "@/lib/generate";
+
+const chat = new ChatOpenAI({ temperature: 0 });
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { input, selectedTemplate = TemplateEnum.FLOWCHART } = req.body;
+
+  if (!input) {
+    return res.status(400).json({ message: "No input in the request" });
+  }
+
+  try {
+    const ans = await generate({ input, selectedTemplate });
+
+    const text = ans.text
+      .replaceAll("```", "")
+      .replaceAll(`"`, `'`)
+      .replaceAll(`end[End]`, `ends[End]`)
+      .replace("mermaid", "");
+
+    return res.status(200).json({ text });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).json({ error: e.message });
+  }
+}
+```
+
+Contents of pages/api/dist/ask.js:
+```
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+exports.__esModule = true;
+var chat_models_1 = require("langchain/chat_models");
+var prompt_by_template_1 = require("@/lib/prompt-by-template");
+var generate_1 = require("@/lib/generate");
+var chat = new chat_models_1.ChatOpenAI({ temperature: 0 });
+function handler(req, res) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, input, _b, selectedTemplate, ans, text, e_1;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _a = req.body, input = _a.input, _b = _a.selectedTemplate, selectedTemplate = _b === void 0 ? prompt_by_template_1.TemplateEnum.FLOWCHART : _b;
+                    if (!input) {
+                        return [2 /*return*/, res.status(400).json({ message: "No input in the request" })];
+                    }
+                    _c.label = 1;
+                case 1:
+                    _c.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, generate_1.generate({ input: input, selectedTemplate: selectedTemplate })];
+                case 2:
+                    ans = _c.sent();
+                    text = ans.text
+                        .replaceAll("```", "")
+                        .replaceAll("\"", "'")
+                        .replaceAll("end[End]", "ends[End]")
+                        .replace("mermaid", "");
+                    return [2 /*return*/, res.status(200).json({ text: text })];
+                case 3:
+                    e_1 = _c.sent();
+                    throw e_1;
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
+exports["default"] = handler;
+
+```
+
+Contents of styles/globals.css:
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn-grad {
+    @apply bg-gradient-to-r from-teal-200 to-lime-200 text-black;
+}
+
+.bg-stripe {
+    background: #222 repeating-linear-gradient(
+            to bottom,
+            transparent 7px,
+            rgba(0, 0, 0, 0.8) 9px,
+            rgba(0, 0, 0, 0.8) 13px,
+            transparent 13px
+    );
+}
+
+.mermaid svg{
+    margin: 0 auto!important;
+}
+```
+
