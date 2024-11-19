@@ -10,10 +10,11 @@ module.exports = {
     themes: [
       {
         app_dark: {
-          primary: "#00ffff",
-          secondary: "#f6d860",
-          accent: "#37cdbe",
+          primary: "#89CFF0", // baby blue
+          secondary: "#000080", // navy blue
+          accent: "#5F9EA0", // cadet blue
           neutral: "#3d4451",
+          success: "#4299E1",
           "base-100": "#050505",
 
           "--rounded-box": "1rem", // border radius rounded-box utility class, used in card and other large boxes

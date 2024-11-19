@@ -60,6 +60,12 @@ service database1(database)[My Database] in private_api
 
 ### Edges
 
+The syntax for declaring an edge is:
+
+```
+{serviceId}{{group}}?:{T|B|L|R} {<}?--{>}? {T|B|L|R}:{serviceId}{{group}}?
+```
+
 Define edges to represent connections between services using the following syntax:
 
 plaintext
@@ -86,11 +92,25 @@ plaintext
 db:R -- L:server
 
 
-This creates an edge from the right side of db to the left side of server.
+The side of the service the edge comes out of is specified by adding a colon (`:`) to the side of the service connecting to the arrow and adding `L|R|T|B`
+
+For example:
+
+```
+db:R -- L:server
+```
+
+creates an edge between the services `db` and `server`, with the edge coming out of the right of `db` and the left of `server`.
+
+```
+db:T -- L:server
+```
+
+creates a 90 degree edge between the services `db` and `server`, with the edge coming out of the top of `db` and the left of `server`.
 
 #### Arrows
 
-Add arrows to edges to indicate direction:
+Add arrows only when needing to indicate direction:
 
 - **-->**: Arrow pointing to the right.
 - **<--**: Arrow pointing to the left.
@@ -105,26 +125,52 @@ This creates an edge from subnet to gateway with an arrow pointing towards gatew
 
 ---
 
+#### Edges out of Groups
+
+To have an edge go from a group to another group or service within another group, the `{group}` modifier can be added after the `serviceId`.
+
+For example:
+
+```
+service server[Server] in groupOne
+service subnet[Subnet] in groupTwo
+
+server{group}:B --> T:subnet{group}
+```
+
+creates an edge going out of `groupOne`, adjacent to `server`, and into `groupTwo`, adjacent to `subnet`.
+
+It's important to note that `groupId`s cannot be used for specifying edges and the `{group}` modifier can only be used for services within a group.
+
+---
+
 ### Junctions
 
-Junctions act as nodes for splitting or merging edges and are defined using:
+Junctions are a special type of node which acts as a potential 4-way split between edges.
 
-plaintext
-junction {junction_id} (in {parent_id})?
+The syntax for declaring a junction is:
 
+```
+junction {junction id} (in {parent id})?
+```
 
-**Example:**
-
-mermaid
+```mermaid-example
 architecture-beta
     service left_disk(disk)[Disk]
     service top_disk(disk)[Disk]
     service bottom_disk(disk)[Disk]
+    service top_gateway(internet)[Gateway]
+    service bottom_gateway(internet)[Gateway]
     junction junctionCenter
+    junction junctionRight
 
     left_disk:R -- L:junctionCenter
     top_disk:B -- T:junctionCenter
     bottom_disk:T -- B:junctionCenter
+    junctionCenter:R -- L:junctionRight
+    top_gateway:B -- T:junctionRight
+    bottom_gateway:T -- B:junctionRight
+```
 
 
 ---
@@ -149,7 +195,7 @@ This connects ingestapi from the right side to the left side of preprocessor.
 ## Naming Conventions
 
 - Use clear and descriptive names for group_id and service_id.
-- Do not use hyphens (-) or underscores (_) in names.
+- Avoid hyphens (-) and underscores (_) in [{title}] names.
 - Keep names concise and avoid special characters.
 
 ---
@@ -270,13 +316,11 @@ architecture-beta
 2. **Logical Flow**: Create a logical flow from one service to another, maintaining clarity in the diagram.
 3. **Edge Connections**: Use edge routing (R, L, T, B) to define where connections occur on each service.
 4. **Avoid Crossed Edges**: Organize services and edges to minimize crossing lines, enhancing readability.
-5. **Consistent Naming**: Use clear and consistent identifiers for groups and services without hyphens or underscores.
+5. **Consistent Naming**: Use clear and consistent identifiers for groups, titles, and services and avoid hyphens (-) or underscores (_).
 6. **No Overlapping Connections**: Avoid overlapping components within the same group when connecting to another group.
 
 ---
 
-By adhering to these guidelines and utilizing the syntax and examples provided, you can generate accurate and professional architecture diagrams using Mermaid. These diagrams will effectively communicate system designs and workflows.
 
 
----
-If you understand, your next job is to ask for a description of the application or process so you create the architecture design
+

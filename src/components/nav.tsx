@@ -9,7 +9,7 @@ const Nav = () => {
         <div className="items-center grid-flow-col">
           <a
             className="btn btn-ghost"
-            href="https://github.com/otey247/flowgpt"
+            href="https://github.com/otey247/diagram-creator"
             rel="noreferrer"
             target="_blank"
           >
@@ -23,19 +23,9 @@ const Nav = () => {
           </a>
         </div>
         <div className="grid-flow-col gap-2 md:place-self-center md:justify-self-end mr-4 font-serif">
-          <span>Made with ❤️ by</span>
+          <span>Made by the Jump Start Team</span>
           <a
-            href="https://twitter.com/otey247"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Icon
-              icon="akar-icons:twitter-fill"
-              className="text-xl text-[#1DA1F2]"
-            />
-          </a>
-          <a
-            href="https://github.com/otey247/flowgpt"
+            href="https://github.com/CGSOG-JumpStarts/diagram-creator"
             target="_blank"
             rel="noreferrer"
           >

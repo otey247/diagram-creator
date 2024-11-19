@@ -35,7 +35,7 @@ Create a ${selectedTemplate} diagram in mermaid syntax about: ${input}`;
         },
       ],
       temperature: 0.9,
-      max_tokens: 1500,
+      max_tokens: 4000,
     });
 
     return { text: completion.choices[0].message.content || '' };

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import axios from "axios";
 import { Mermaid } from "@/components/mermaid";
-import SelectTemplate from "@/components/select-template";
-import { TemplateEnum } from "@/lib/prompt-by-template";
+import SelectTemplate, { templates } from "@/components/select-template";
+import {TemplateEnum } from "@/lib/prompt-by-template";
 import Image from "next/image";
 import Nav from "@/components/nav";
 
@@ -17,6 +17,12 @@ const Index = () => {
   const name = input ? input.replace(/\s/g, "-").toLowerCase() : "";
 
   const [chart, setChart] = useState("");
+
+  // Get the currently selected template label
+  const getSelectedTemplateLabel = () => {
+    const template = templates.find(t => t.value === selectedTemplate);
+    return template ? template.label : "Flowchart";
+  };
 
   const handleFlow = async (e: any) => {
     e.preventDefault();
@@ -42,6 +48,8 @@ const Index = () => {
     }
   };
 
+  const selectedTemplateLabel = getSelectedTemplateLabel();
+
   return (
     <div className="flex justify-end items-center flex-col h-screen">
       <Nav />
@@ -58,7 +66,7 @@ const Index = () => {
             ) : (
               <div className="flex flex-col justify-center text-white">
                 <h1 className="text-7xl font-black">Generate</h1>
-                <h3 className="text-8xl font-black text-success">Flowchart</h3>
+                <h3 className="text-8xl font-black text-success">{selectedTemplateLabel}</h3>
                 <h2 className="text-5xl font-black">with AI</h2>
               </div>
             )}
@@ -70,18 +78,18 @@ const Index = () => {
         <form onSubmit={handleFlow} className="form-control">
           <div className="input-group">
             <input
-              className="input input-lg input-bordered input-success w-96 "
+              className="input input-lg input-bordered input-success w-96"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               type="text"
-              placeholder="What the flowchart is about"
+              placeholder={`What the ${selectedTemplateLabel.toLowerCase()} is about`}
               autoFocus="on"
             />
             <button
               type="submit"
               className={`btn btn-grad btn-lg ${loading ? "loading" : ""}`}
             >
-              {error ? "Retry" : "Generate Flowchart"}
+              {error ? "Retry" : `Generate ${selectedTemplateLabel}`}
             </button>
           </div>
           <SelectTemplate

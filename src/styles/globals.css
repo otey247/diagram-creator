@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .btn-grad {
-    @apply bg-gradient-to-r from-teal-200 to-lime-200 text-black;
+    @apply bg-gradient-to-r from-blue-200 to-blue-900 text-black;
 }
 
 .bg-stripe {

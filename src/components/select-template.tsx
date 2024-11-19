@@ -11,10 +11,14 @@ export const templates: ITemplate[] = [
   { label: "Mindmap", value: TemplateEnum.MINDMAP },
   { label: "Timeline", value: TemplateEnum.TIMELINE },
   { label: "User Journey", value: TemplateEnum.USERJOURNEY },
+  { label: "Class Diagram", value: TemplateEnum.CLASS },
+  { label: "Kanban", value: TemplateEnum.KANBAN },
   { label: "Entity Relationship", value: TemplateEnum.ENTITYRELATIONSHIP },
   { label: "Sequence Diagram", value: TemplateEnum.SEQUENCE },
   { label: "State Diagram", value: TemplateEnum.STATE },
   { label: "Gantt Chart", value: TemplateEnum.GANTT },
+  { label: "Quandrant Chart", value: TemplateEnum.QUANDRANT },
+  { label: "Sankey Diagram", value: TemplateEnum.SANKEY },
   { label: "Architecture Diagram", value: TemplateEnum.ARCHITECTURE },
   // { label: "Class Diagram", value: TemplateEnum.CLASS }, // FIXME: syntax mistake is pretty common for this
 ];
