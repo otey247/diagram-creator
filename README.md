@@ -9,16 +9,16 @@ A Next.js application that leverages generative ai to generate various types of 
 - Mindmaps
 - Timelines
 - User Journey Maps
-  - Entity Relationship Diagrams
-  - Sequence Diagrams
-  - State Diagrams
-  - Gantt Charts
-  - Architecture Diagrams
+- Entity Relationship Diagrams
+- Sequence Diagrams
+- State Diagrams
+- Gantt Charts
+- Architecture Diagrams
 
-- Interactive diagram viewing with zoom and pan capabilities
-- Export options for SVG format and Mermaid code
-- Dark theme optimized UI using DaisyUI
-- Responsive design
+Interactive diagram viewing with zoom and pan capabilities
+Export options for SVG format and Mermaid code
+Dark theme optimized UI using DaisyUI
+Responsive design
 
 ## Prerequisites
 
