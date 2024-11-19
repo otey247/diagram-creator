@@ -1,6 +1,6 @@
-# AI Diagram Generator
+# Generative AI Diagram Generator
 
-A Next.js application that leverages GPT-4 to generate various types of diagrams using Mermaid syntax, including flowcharts, mindmaps, timelines, and more.
+A Next.js application that leverages generative ai to generate various types of diagrams using Mermaid syntax, including flowcharts, mindmaps, timelines, and more.
 
 ## Features
 
@@ -55,7 +55,7 @@ yarn dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🖥️ Usage
+## Usage
 
 1. Select a diagram type from the dropdown menu
 2. Enter your diagram description in the input field
@@ -64,7 +64,7 @@ yarn dev
    - Copy the Mermaid code
    - Download as SVG
 
-## 🔧 Tech Stack
+## Tech Stack
 
 - Next.js 13
 - TypeScript
@@ -74,6 +74,6 @@ yarn dev
 - DaisyUI
 - React Zoom Pan Pinch
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
