@@ -4,11 +4,11 @@ A Next.js application that leverages generative ai to generate various types of 
 
 ## Features
 
-- Multiple diagram types supported:
-  - Flowcharts
-  - Mindmaps
-  - Timelines
-  - User Journey Maps
+ Multiple diagram types supported:
+- Flowcharts
+- Mindmaps
+- Timelines
+- User Journey Maps
   - Entity Relationship Diagrams
   - Sequence Diagrams
   - State Diagrams
